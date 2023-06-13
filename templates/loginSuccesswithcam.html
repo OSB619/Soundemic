@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/regis.css')}}">
+  <script type="text/javascript">
+    
+    document.addEventListener('DOMContentLoaded', () => {
+    const video = document.getElementById('video');
+    const captureBtn = document.getElementById('capture-btn');
+
+    let mediaStream;
+
+    // Request access to the webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+            mediaStream = stream;
+        })
+        .catch(error => {
+            console.error('Error accessing the webcam:', error);
+        });
+
+    // Capture button click event
+    captureBtn.addEventListener('click', () => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        // Set the canvas dimensions to match the video stream
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Draw the current frame of the video on the canvas
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Create a temporary download link
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL(); // Convert canvas content to base64 image data
+        link.download = 'webcam_capture.png'; // Set the image file name
+
+        // Simulate a click on the link to trigger the download
+        link.click();
+
+        // Clean up
+        link.remove();
+
+        window.location.href= 'http://127.0.0.1:5000/result';
+
+    });
+
+    // Clean up the media stream when the page is closed or refreshed
+    window.addEventListener('beforeunload', () => {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+        }
+    });
+});
+
+  </script>
+ 
+    <title>Webcam Capture</title>
+
+</head>
+<body>
+  <button class="home-button"  onclick="window.location.href= 'http://127.0.0.1:5000/' ;">
+    <img src="https://raw.githubusercontent.com/OSB619/Soundemic/main/images/homebg.png" alt="Home" />
+    HOME
+  </button>
+  <h1>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp </h1>
+  <div class="container">
+   
+   <h1 align="centre">
+     Welcome!!!!<br>
+     login successful....
+   </h1>
+
+
+    <video id="video" autoplay></video>
+    <button id="capture-btn" >Capture</button>
+  
+    
+
+
+  </div>
+</body>
+</html>
